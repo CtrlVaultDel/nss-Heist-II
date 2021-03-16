@@ -15,5 +15,11 @@ namespace HeistII
                 Console.WriteLine($"{Name} has knocked out all of the security guards!");
             }
         }
+        public Muscle(string name, int skillLevel, int percentageCut)
+        {
+            Name = name;
+            SkillLevel = skillLevel;
+            PercentageCut = percentageCut;
+        }
     }
 }

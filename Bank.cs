@@ -7,17 +7,18 @@ namespace HeistII
         public int AlarmScore { get; set; }
         public int VaultScore { get; set; }
         public int SecurityGuardScore { get; set; }
-        private bool IsSecure;
-
-        private void ComputeIsSecure()
+        private bool IsSecure
         {
-            if (CashOnHand <= 0 && AlarmScore <= 0 && VaultScore <= 0 && SecurityGuardScore <= 0)
+            get
             {
-                IsSecure = false;
-            }
-            else
-            {
-                IsSecure = true;
+                if (CashOnHand <= 0 && AlarmScore <= 0 && VaultScore <= 0 && SecurityGuardScore <= 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
             }
         }
     }
