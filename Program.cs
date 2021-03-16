@@ -126,7 +126,12 @@ namespace HeistII
                 }
                 Console.WriteLine($"There are now {rolodex.Count} members");
             }
-            Console.WriteLine("=== Full roster ===");
+
+            // Create a new bank object
+            Bank bank = new Bank();
+
+            // Print out the entire roster of robbers
+            Console.WriteLine($"=== Full roster ({rolodex.Count}) ===");
             foreach (IRobber robber in rolodex)
             {
                 Console.WriteLine($"Name: {robber.Name}");
