@@ -7,7 +7,7 @@ namespace HeistII
         public int AlarmScore { get; set; }
         public int VaultScore { get; set; }
         public int SecurityGuardScore { get; set; }
-        private bool IsSecure
+        public bool IsSecure
         {
             get
             {

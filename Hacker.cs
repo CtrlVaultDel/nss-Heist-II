@@ -4,6 +4,7 @@ namespace HeistII
     public class Hacker : IRobber
     {
         public string Name { get; set; }
+        public string Specialty { get; set; }
         public int SkillLevel { get; set; }
         public int PercentageCut { get; set; }
         public void PerformSkill(Bank bank)
@@ -18,6 +19,7 @@ namespace HeistII
         public Hacker(string name, int skillLevel, int percentageCut)
         {
             Name = name;
+            Specialty = "Hacker";
             SkillLevel = skillLevel;
             PercentageCut = percentageCut;
         }

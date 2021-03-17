@@ -4,6 +4,7 @@ namespace HeistII
     public class Muscle : IRobber
     {
         public string Name { get; set; }
+        public string Specialty { get; set; }
         public int SkillLevel { get; set; }
         public int PercentageCut { get; set; }
         public void PerformSkill(Bank bank)
@@ -18,6 +19,7 @@ namespace HeistII
         public Muscle(string name, int skillLevel, int percentageCut)
         {
             Name = name;
+            Specialty = "Muscle";
             SkillLevel = skillLevel;
             PercentageCut = percentageCut;
         }

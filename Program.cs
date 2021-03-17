@@ -130,15 +130,156 @@ namespace HeistII
             // Create a new bank object
             Bank bank = new Bank();
 
-            // Print out the entire roster of robbers
-            Console.WriteLine($"=== Full roster ({rolodex.Count}) ===");
-            foreach (IRobber robber in rolodex)
+            // Print out details about the bank
+            // Determines the most and least secure areas
+            Console.WriteLine();
+            if (bank.AlarmScore >= bank.SecurityGuardScore && bank.AlarmScore >= bank.VaultScore)
             {
-                Console.WriteLine($"Name: {robber.Name}");
-                Console.WriteLine($"Specialty: {robber.GetType().Name}");
-                Console.WriteLine($"Skill Level: {robber.SkillLevel}");
-                Console.WriteLine($"Percentage Cut: {robber.PercentageCut}");
+                Console.WriteLine("Most Secure: Alarm");
+                if (bank.VaultScore >= bank.SecurityGuardScore)
+                {
+                    Console.WriteLine("Least Secure: Security");
+                }
+                else
+                {
+                    Console.WriteLine("Least Secure: Vault");
+                }
+            }
+            else if (bank.SecurityGuardScore >= bank.AlarmScore && bank.SecurityGuardScore >= bank.VaultScore)
+            {
+                Console.WriteLine("Most Secure: Security");
+                if (bank.AlarmScore >= bank.VaultScore)
+                {
+                    Console.WriteLine("Least Secure: Vault");
+                }
+                else
+                {
+                    Console.WriteLine("Least Secure: Alarm");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Most Secure: Vault");
+                if (bank.SecurityGuardScore >= bank.AlarmScore)
+                {
+                    Console.WriteLine("Least Secure: Alarm");
+                }
+                else
+                {
+                    Console.WriteLine("Least Secure: Security");
+                }
+            }
+
+            // Prepare a list for the crew that will be used for the heist
+            Console.WriteLine();
+            List<IRobber> crew = new List<IRobber>();
+
+            bool crewReady = false;
+            int percentageRemaining = 100;
+            int totalHacking = 0;
+            int totalLockpicking = 0;
+            int totalMuscle = 0;
+
+            while (!crewReady)
+            {
+                // Print out the entire roster of potential crewmembers
+                Console.WriteLine($"=== Full roster ({rolodex.Count}) ===");
+                int indexer = 0;
+                foreach (IRobber robber in rolodex)
+                {
+                    Console.WriteLine($"Option: {indexer}");
+                    Console.WriteLine($"Name: {robber.Name}");
+                    Console.WriteLine($"Specialty: {robber.Specialty}");
+                    Console.WriteLine($"Skill Level: {robber.SkillLevel}");
+                    Console.WriteLine($"Percentage Cut: {robber.PercentageCut}");
+                    Console.WriteLine();
+                    indexer++;
+                }
+
+                Console.WriteLine("Current Stats of Crew");
+                Console.WriteLine($"Percentage of cut remaining: {percentageRemaining}");
+                Console.WriteLine($"Total Hacking: {totalHacking}");
+                Console.WriteLine($"Total Lockpicking: {totalLockpicking}");
+                Console.WriteLine($"Total Muscle: {totalMuscle}");
                 Console.WriteLine();
+
+                bool isMember = false;
+                int memberChoice = 0;
+
+                while (!isMember)
+                {
+                    Console.WriteLine("Please add a new crewmember by entering their related number or enter nothing to continue.");
+                    string initialResponse = Console.ReadLine();
+
+                    // Check if the user entered a blank response. Break out if so
+                    if (initialResponse == "")
+                    {
+                        crewReady = true;
+                        break;
+                    }
+
+                    isMember = Int32.TryParse(initialResponse, out memberChoice);
+                    if (isMember && memberChoice <= rolodex.Count - 1 && memberChoice >= 0)
+                    {
+                        if (percentageRemaining - rolodex[memberChoice].PercentageCut >= 0)
+                        {
+                            // Add the member to the crew
+                            crew.Add(rolodex[memberChoice]);
+
+                            // Remove their cut of the pay from the remaining percentage
+                            percentageRemaining -= rolodex[memberChoice].PercentageCut;
+
+                            // Add the crewmember's skill to the appropriate specialty
+                            if (rolodex[memberChoice].Specialty == "Hacker")
+                            {
+                                totalHacking += rolodex[memberChoice].SkillLevel;
+                            }
+                            else if (rolodex[memberChoice].Specialty == "LockSpecialist")
+                            {
+                                totalLockpicking += rolodex[memberChoice].SkillLevel;
+                            }
+                            else
+                            {
+                                totalMuscle += rolodex[memberChoice].SkillLevel;
+                            }
+
+                            // Remove the chosen member from the original rolodex list
+                            rolodex.RemoveAt(memberChoice);
+                        }
+                        else
+                        {
+                            // If there is not enough pay to give to the member, remove them from the original list
+                            Console.WriteLine($"There is not enough of a cut for {rolodex[memberChoice].Name} to take.");
+                            rolodex.RemoveAt(memberChoice);
+                        }
+                    }
+                    else
+                    {
+                        isMember = false;
+                    }
+                }
+            }
+
+            // Update the bank's security scores based off the current crew abilities
+            foreach (IRobber robber in crew)
+            {
+                robber.PerformSkill(bank);
+                Console.WriteLine();
+            }
+
+            if (bank.IsSecure)
+            {
+                Console.WriteLine("The heist was a success!");
+                Console.WriteLine($"Total money earned: ${String.Format("{0:n}", bank.CashOnHand * 1.0f)}");
+                foreach (IRobber robber in crew)
+                {
+                    Console.WriteLine($"{robber.Name} took home ${String.Format("{0:n}", (robber.PercentageCut * 1.0f / 100) * bank.CashOnHand)}");
+                }
+                Console.WriteLine($"You took home ${String.Format("{0:n}", (percentageRemaining * 1.0f / 100) * bank.CashOnHand)}");
+            }
+            else
+            {
+                Console.WriteLine("The heist failed!");
             }
         }
     }
